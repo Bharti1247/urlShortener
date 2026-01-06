@@ -51,4 +51,5 @@ public class UrlController {
         UrlMapping created = service.createOrGetShortUrl(originalUrl);
         return ResponseEntity.ok("http://localhost:8080/" + created.getShortCode());
     }
+    
 }
