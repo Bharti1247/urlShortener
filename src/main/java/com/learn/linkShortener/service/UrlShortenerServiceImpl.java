@@ -37,6 +37,20 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
         return mapping.getOriginalUrl();
     }
+    
+	@Override
+    public UrlMapping createOrGetShortUrl(String originalUrl) {
+
+        return urlRepository.findByOriginalUrl(originalUrl)
+                .orElseGet(() -> {
+                    UrlMapping mapping = new UrlMapping();
+                    mapping.setOriginalUrl(originalUrl);
+                    mapping.setShortCode(generateShortCode());
+                    mapping.setCreatedAt(LocalDateTime.now());
+                    mapping.setHitCount(0L);
+                    return urlRepository.save(mapping);
+                });
+    }
 
     private String generateShortCode() {
         return UUID.randomUUID().toString().substring(0, 6);

@@ -17,7 +17,7 @@ public class UrlMapping {
     @Column(nullable = false, unique = true)
     private String shortCode;
 
-    @Column(nullable = false, length = 2048)
+    @Column(nullable = false, length = 2048, unique = true) // uniqueness guarantees single short code per URL
     private String originalUrl;
 
     private LocalDateTime createdAt;
