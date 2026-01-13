@@ -19,31 +19,6 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 	private final UrlRepository urlRepository;
 
 	@Override
-	public String shortenUrl(String originalUrl) {
-		String shortCode = generateShortCode();
-
-        UrlMapping mapping = new UrlMapping();
-        mapping.setOriginalUrl(originalUrl);
-        mapping.setShortCode(shortCode);
-        mapping.setCreatedAt(LocalDateTime.now());
-        mapping.setHitCount(0L);
-
-        urlRepository.save(mapping);
-        return shortCode;
-	}
-
-	@Override
-	public String getOriginalUrl(String shortCode) {
-        UrlMapping mapping = urlRepository.findByShortCode(shortCode)
-                .orElseThrow(() -> new RuntimeException("Short URL not found"));
-
-        mapping.setHitCount(mapping.getHitCount() + 1);
-        urlRepository.save(mapping);
-
-        return mapping.getOriginalUrl();
-    }
-    
-	@Override
     public UrlMapping createOrGetShortUrl(String originalUrl) {
 
         return urlRepository.findByOriginalUrl(originalUrl)
@@ -71,25 +46,34 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
         return mapping.getOriginalUrl();
     }
     
-    @Transactional
-    public void disableShortUrl(String shortCode) {
-        UrlMapping mapping = urlRepository.findByShortCode(shortCode)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        mapping.setShortUrlEnabled(false);
-    }
-    
     @Override
     @Transactional
-    public void enableShortUrl(String shortCode) {
+    public void updateShortUrlStatusv1(String shortCode, Boolean enabled) {
 
         UrlMapping mapping = urlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Short URL not found"));
 
-        if (Boolean.TRUE.equals(mapping.getShortUrlEnabled())) {
-            return; // already enabled (idempotent)
+        if (enabled.equals(mapping.getShortUrlEnabled())) {
+            return; // idempotent operation
         }
 
-        mapping.setShortUrlEnabled(true);
+        mapping.setShortUrlEnabled(enabled);
+    }
+    
+    @Override
+    @Transactional
+    public String updateShortUrlStatus(String shortCode, Boolean enabled) {
+
+        UrlMapping mapping = urlRepository.findByShortCode(shortCode)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Short URL not found"));
+
+        if (enabled.equals(mapping.getShortUrlEnabled())) {
+            return enabled ? "Short URL is already enabled" : "Short URL is already disabled";
+        }
+
+        mapping.setShortUrlEnabled(enabled);
+
+        return enabled ? "Short URL has been enabled successfully" : "Short URL has been disabled successfully";
     }
 
 }

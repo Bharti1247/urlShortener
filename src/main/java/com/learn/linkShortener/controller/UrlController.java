@@ -5,11 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.learn.linkShortener.dto.ShortUrlStatusRequest;
+import com.learn.linkShortener.dto.ShortUrlStatusResponse;
 import com.learn.linkShortener.entity.UrlMapping;
 import com.learn.linkShortener.service.UrlShortenerServiceImpl;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-//import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,22 +21,6 @@ public class UrlController {
 
     private final UrlShortenerServiceImpl service;
 
-    // Create short URL
-    @PostMapping("/api/shorten")
-    public ResponseEntity<String> shortenUrl(@RequestParam String url) {
-        String shortCode = service.shortenUrl(url);
-        return ResponseEntity.ok("http://localhost:8080/" + shortCode);
-    }
-
-//    // Redirect to original URL
-//    @GetMapping("/{shortCode}")
-//    public ResponseEntity<Void> redirect(@PathVariable String shortCode) {
-//        String originalUrl = service.getOriginalUrl(shortCode);
-//        return ResponseEntity.status(HttpStatus.FOUND)
-//                .location(URI.create(originalUrl))
-//                .build();
-//    }
-    
     // Create or get short URL
     @PostMapping("/api/createOrGetShortUrl")
     public ResponseEntity<String> shorten(@RequestBody Map<String, String> body) {
@@ -64,20 +50,20 @@ public class UrlController {
                 .build();
     }
     
-    // Disable short URL
-    @PatchMapping("/{shortCode}/disable")
-    public ResponseEntity<Void> disable(@PathVariable String shortCode) {
+    // Enable/Disable short URL
+    @PatchMapping("/{shortCode}/status")
+//    public ResponseEntity<Void> updateStatus(
+//    		@PathVariable String shortCode, @Valid @RequestBody ShortUrlStatusRequest request) {
+//
+//        service.updateShortUrlStatus(shortCode, request.getEnabled());
+//        return ResponseEntity.noContent().build();
+//    }
+    public ResponseEntity<ShortUrlStatusResponse> updateStatus(
+            @PathVariable String shortCode, @Valid @RequestBody ShortUrlStatusRequest request) {
 
-        service.disableShortUrl(shortCode);
-        return ResponseEntity.noContent().build();
-    }
-    
-    // Enable short URL
-    @PatchMapping("/{shortCode}/enable")
-    public ResponseEntity<Void> enable(@PathVariable String shortCode) {
+        String message = service.updateShortUrlStatus(shortCode, request.getEnabled());
 
-        service.enableShortUrl(shortCode);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ShortUrlStatusResponse(message));
     }
     
 }
