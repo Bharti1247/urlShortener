@@ -9,6 +9,4 @@ public interface UrlShortenerService {
     String resolveShortUrl(String shortCode);
     
     String updateShortUrlStatus(String shortCode, Boolean enabled);
-    
-    void updateShortUrlStatusv1(String shortCode, Boolean enabled);
 }

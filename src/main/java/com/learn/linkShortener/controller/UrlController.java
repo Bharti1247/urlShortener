@@ -52,12 +52,6 @@ public class UrlController {
     
     // Enable/Disable short URL
     @PatchMapping("/{shortCode}/status")
-//    public ResponseEntity<Void> updateStatus(
-//    		@PathVariable String shortCode, @Valid @RequestBody ShortUrlStatusRequest request) {
-//
-//        service.updateShortUrlStatus(shortCode, request.getEnabled());
-//        return ResponseEntity.noContent().build();
-//    }
     public ResponseEntity<ShortUrlStatusResponse> updateStatus(
             @PathVariable String shortCode, @Valid @RequestBody ShortUrlStatusRequest request) {
 
