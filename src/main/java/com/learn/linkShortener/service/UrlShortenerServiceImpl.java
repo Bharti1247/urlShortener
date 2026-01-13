@@ -3,14 +3,14 @@ package com.learn.linkShortener.service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.learn.linkShortener.entity.UrlAudit;
 import com.learn.linkShortener.entity.UrlMapping;
 import com.learn.linkShortener.enums.AuditAction;
+import com.learn.linkShortener.exceptions.ShortUrlDisabledException;
+import com.learn.linkShortener.exceptions.ShortUrlNotFoundException;
 import com.learn.linkShortener.repository.AuditRepository;
 import com.learn.linkShortener.repository.UrlRepository;
 import com.learn.linkShortener.security.SecurityUtil;
@@ -48,7 +48,11 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
 
         UrlMapping mapping = urlRepository
                 .findByShortCodeAndShortUrlEnabledTrue(shortCode)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.GONE, "Short URL is disabled"));
+                .orElseThrow(() -> new ShortUrlNotFoundException("Short URL does not exist"));
+        
+        if (!mapping.getShortUrlEnabled()) {
+            throw new ShortUrlDisabledException("This short URL has been disabled");
+        }
         
         mapping.setHitCount(mapping.getHitCount() + 1);
 
@@ -60,7 +64,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     public String updateShortUrlStatus(String shortCode, Boolean enabled) {
 
         UrlMapping mapping = urlRepository.findByShortCode(shortCode)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Short URL not found"));
+                .orElseThrow(() -> new ShortUrlNotFoundException("Short URL does not exist"));
         
         Boolean oldState = mapping.getShortUrlEnabled();
         
