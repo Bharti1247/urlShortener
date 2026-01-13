@@ -8,6 +8,8 @@ import lombok.*;
 @Table(name = "url_mapping")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UrlMapping {
 	
 	@Id
@@ -19,8 +21,11 @@ public class UrlMapping {
 
     @Column(nullable = false, length = 2048, unique = true) // uniqueness guarantees single short code per URL
     private String originalUrl;
+    
+    @Column(nullable = false)
+    private Boolean shortUrlEnabled = true;
 
     private LocalDateTime createdAt;
 
-    private Long hitCount;
+    private Long hitCount;    
 }

@@ -9,4 +9,8 @@ public interface UrlShortenerService {
     String getOriginalUrl(String shortCode);
     
     UrlMapping createOrGetShortUrl(String originalUrl);
+    
+    String resolveShortUrl(String shortCode);
+    
+    void enableShortUrl(String shortCode);
 }
