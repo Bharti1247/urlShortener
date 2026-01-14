@@ -3,6 +3,8 @@ package com.learn.linkShortener.service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     private final AuditRepository auditRepository;
 
 	@Override
+	@CacheEvict(value = "shortUrlCache", key = "#result.shortCode", condition = "#result != null")
     public UrlMapping createOrGetShortUrl(String originalUrl) {
 		        
 		return urlRepository.findByOriginalUrl(originalUrl)
@@ -44,8 +47,9 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     
     @Override
     @Transactional
+    @Cacheable(value = "shortUrlCache", key = "#shortCode", unless = "#result == null")
     public String resolveShortUrl(String shortCode) {
-
+    	System.out.println("DB HIT for shortCode: " + shortCode);
         UrlMapping mapping = urlRepository
                 .findByShortCodeAndShortUrlEnabledTrue(shortCode)
                 .orElseThrow(() -> new ShortUrlNotFoundException("Short URL does not exist"));
@@ -61,6 +65,7 @@ public class UrlShortenerServiceImpl implements UrlShortenerService {
     
     @Override
     @Transactional
+    @CacheEvict(value = "shortUrlCache", key = "#shortCode")
     public String updateShortUrlStatus(String shortCode, Boolean enabled) {
 
         UrlMapping mapping = urlRepository.findByShortCode(shortCode)
