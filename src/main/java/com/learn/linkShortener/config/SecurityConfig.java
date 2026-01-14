@@ -5,8 +5,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.*;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+//import org.springframework.security.core.userdetails.*;
+//import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.learn.linkShortener.security.RestAccessDeniedHandler;
@@ -53,20 +53,20 @@ public class SecurityConfig {
         return http.build();
     }
     
-    @Bean
-    public UserDetailsService userDetailsService() {
-
-        UserDetails admin = User.withUsername("admin")
-                .password("{noop}admin123")
-                .roles("ADMIN")
-                .build();
-
-        UserDetails ops = User.withUsername("ops")
-                .password("{noop}ops123")
-                .roles("OPS")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin, ops);
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//
+//        UserDetails admin = User.withUsername("admin")
+//                .password("{noop}admin123")
+//                .roles("ADMIN")
+//                .build();
+//
+//        UserDetails ops = User.withUsername("ops")
+//                .password("{noop}ops123")
+//                .roles("OPS")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(admin, ops);
+//    }
 }
 
