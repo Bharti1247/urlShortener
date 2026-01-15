@@ -1,0 +1,65 @@
+{
+	"info": {
+		"_postman_id": "a33ee28a-5546-43f6-95a7-693b5ee52184",
+		"name": "URL Shortener",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "47153888",
+		"_collection_link": "https://bharti-it-2025-7351660.postman.co/workspace/17af50d0-c2aa-4a84-8ab7-0f349bbb3bea/collection/47153888-a33ee28a-5546-43f6-95a7-693b5ee52184?action=share&source=collection_link&creator=47153888"
+	},
+	"item": [
+		{
+			"name": "access via short url",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/f744f2"
+			},
+			"response": []
+		},
+		{
+			"name": "createOrGetShortUrl",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"url\" : \"https://yahoo.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/createOrGetShortUrl"
+			},
+			"response": []
+		},
+		{
+			"name": "enable/disable short url",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/f744f2/enable"
+			},
+			"response": []
+		},
+		{
+			"name": "actuator",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/actuator"
+			},
+			"response": []
+		}
+	]
+}
