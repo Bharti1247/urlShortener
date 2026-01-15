@@ -14,7 +14,6 @@ public final class SecurityUtil {
         if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
             return "SYSTEM";
         }
-        return auth.getName();
+        return String.valueOf(auth.getName());
     }
 }
-

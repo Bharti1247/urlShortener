@@ -12,9 +12,11 @@ import com.learn.linkShortener.service.UrlShortenerServiceImpl;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import java.util.Map;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UrlController {
@@ -27,37 +29,54 @@ public class UrlController {
 
         String originalUrl = body.get("url");
 
-        Optional<UrlMapping> existing =
-        		Optional.of(service.createOrGetShortUrl(originalUrl));
+        log.info("Received request to create/get short URL");
 
-        if (existing.isPresent()) {
-        	return ResponseEntity.ok("http://localhost:8080/" + existing.get().getShortCode());
+        if (originalUrl == null || originalUrl.isBlank()) {
+            log.warn("Invalid request: originalUrl is missing or blank");
+            return ResponseEntity.badRequest().body("URL must not be empty");
         }
 
-        UrlMapping created = service.createOrGetShortUrl(originalUrl);
-        return ResponseEntity.ok("http://localhost:8080/" + created.getShortCode());
+        UrlMapping mapping = service.createOrGetShortUrl(originalUrl);
+
+        String shortUrl = "http://localhost:8080/" + mapping.getShortCode();
+
+        log.info("Short URL generated/retrieved successfully shortCode={}",
+                 mapping.getShortCode());
+
+        return ResponseEntity.ok(shortUrl);
     }
-    
-    // Redirect to original URL, if enabled
+
+    // Redirect to original URL
     @GetMapping("/{shortCode}")
     public ResponseEntity<Void> redirect(@PathVariable String shortCode) {
 
+        log.info("Redirect request received shortCode={}", shortCode);
+
         String originalUrl = service.resolveShortUrl(shortCode);
+
+        log.info("Redirecting shortCode={} to originalUrl={}",
+                 shortCode, originalUrl);
 
         return ResponseEntity
                 .status(HttpStatus.SEE_OTHER)
                 .header(HttpHeaders.LOCATION, originalUrl)
                 .build();
     }
-    
-    // Enable/Disable short URL
+
+    // Enable / Disable short URL
     @PatchMapping("/{shortCode}/status")
     public ResponseEntity<ShortUrlStatusResponse> updateStatus(
-            @PathVariable String shortCode, @Valid @RequestBody ShortUrlStatusRequest request) {
+            @PathVariable String shortCode,
+            @Valid @RequestBody ShortUrlStatusRequest request) {
+
+        log.info("Update short URL status request received shortCode={} enabled={}",
+                 shortCode, request.getEnabled());
 
         String message = service.updateShortUrlStatus(shortCode, request.getEnabled());
 
+        log.info("Short URL status updated successfully shortCode={} enabled={}",
+                 shortCode, request.getEnabled());
+
         return ResponseEntity.ok(new ShortUrlStatusResponse(message));
     }
-    
 }

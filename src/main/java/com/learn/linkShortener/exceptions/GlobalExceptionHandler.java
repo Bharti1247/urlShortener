@@ -1,6 +1,8 @@
 package com.learn.linkShortener.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,11 +10,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ShortUrlNotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFound(ShortUrlNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleNotFound(
+            ShortUrlNotFoundException ex,
+            HttpServletRequest request) {
+
+        log.warn("Short URL not found path={} message={}",
+                 request.getRequestURI(),
+                 ex.getMessage());
 
         ApiError error = new ApiError(
                 LocalDateTime.now(),
@@ -26,7 +35,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ShortUrlDisabledException.class)
-    public ResponseEntity<ApiError> handleDisabled(ShortUrlDisabledException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleDisabled(
+            ShortUrlDisabledException ex,
+            HttpServletRequest request) {
+
+        log.warn("Short URL disabled path={} message={}",
+                 request.getRequestURI(),
+                 ex.getMessage());
 
         ApiError error = new ApiError(
                 LocalDateTime.now(),
@@ -40,7 +55,12 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGeneric(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> handleGeneric(
+            Exception ex,
+            HttpServletRequest request) {
+
+        log.error("Unhandled exception occurred path={}",
+                  request.getRequestURI(), ex);
 
         ApiError error = new ApiError(
                 LocalDateTime.now(),
@@ -50,7 +70,8 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(error);
     }
 }
-

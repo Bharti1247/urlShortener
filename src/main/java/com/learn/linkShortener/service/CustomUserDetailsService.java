@@ -1,5 +1,9 @@
 package com.learn.linkShortener.service;
 
+import com.learn.linkShortener.entity.UserEntity;
+import com.learn.linkShortener.repository.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,9 +16,7 @@ import org.springframework.stereotype.Service;
 */
 import org.springframework.security.core.userdetails.UserDetailsService; 
 
-import com.learn.linkShortener.entity.UserEntity;
-import com.learn.linkShortener.repository.UserRepository;
-
+@Slf4j
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 	
@@ -27,8 +29,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     	//System.out.println("\n>>> loadUserByUsername CALLED for: " + username);
+    	log.info("Authenticating user");
+    	
         UserEntity user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> {
+                	log.warn("User not found");
+                	return new UsernameNotFoundException("User not found");
+                });
+        
+        log.info("User authenticated successfully");
 
         return User.builder()
                 .username(user.getUsername())
